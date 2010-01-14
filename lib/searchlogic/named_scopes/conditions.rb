@@ -126,9 +126,9 @@ module Searchlogic
           when /^greater_than/
             scope_options(condition, column_type, "#{table_name}.#{column} > ?")
           when /^like/
-            scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :like)
+            scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ? ESCAPE '^'", :like)
           when /^not_like/
-            scope_options(condition, column_type, "#{table_name}.#{column} NOT #{match_keyword} ?", :like)
+            scope_options(condition, column_type, "#{table_name}.#{column} NOT #{match_keyword} ? ESCAPE '^'", :like)
           when /^begins_with/
             scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :begins_with)
           when /^not_begin_with/
@@ -182,7 +182,7 @@ module Searchlogic
         def value_with_modifier(value, modifier)
           case modifier
           when :like
-            "%#{value}%"
+            "%#{value.gsub(/([%^_])/, '^\1')}%"
           when :begins_with
             "#{value}%"
           when :ends_with
